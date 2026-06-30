@@ -1378,6 +1378,10 @@ onMounted(async () => {
     const cats = await invoke('get_all_categories') as string[];
     allCategories.value = cats;
   } catch {}
+  // 预加载所有工具定义（用于按钮显示总数）
+  try {
+    allToolDefinitions.value = await invoke('get_all_tool_definitions') as ToolBrief[];
+  } catch {}
   // 加载持久化的工具状态
   await loadToolStatus();
   // 自动检测最优路径

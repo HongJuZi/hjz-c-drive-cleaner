@@ -120,9 +120,9 @@ pub fn migrate_tool(
     // 失败自动回滚
     if let Err(ref _e) = result {
         logger.warn(&format!("迁移失败，开始自动回滚..."));
-        // 删除已创建的 Junction
+        // 删除已创建的 Junction（必须用 rmdir，不能用 fs::remove_dir）
         for j in &created_junctions {
-            if j.exists() { fs::remove_dir(j).ok(); }
+            if j.exists() { crate::path_util::remove_junction(j).ok(); }
         }
         // 删除已设置的环境变量
         for env_var in &set_env_vars {
@@ -176,7 +176,14 @@ fn migrate_junction(
         }
 
         // 校验通过，删除原目录以释放 C 盘空间
-        fs::remove_dir_all(&source).map_err(|e| format!("删除原目录 {} 失败: {}", source.display(), e))?;
+        fs::remove_dir_all(&source).map_err(|e| {
+            let raw = e.to_string();
+            if raw.contains("os error 5") || raw.contains("permission denied") || raw.contains("拒绝访问") {
+                format!("删除原目录 {} 失败: 拒绝访问 (os error 5)。\n请确认：1) 已关闭该工具的所有进程；2) 以管理员身份运行本程序；3) 没有其他程序正在占用该目录中的文件。", source.display())
+            } else {
+                format!("删除原目录 {} 失败: {}", source.display(), raw)
+            }
+        })?;
         logger.info(&format!("已删除原目录: {}（C 盘空间已释放）", source.display()));
 
         // 创建 Junction
@@ -301,7 +308,16 @@ fn copy_dir_all_tracked(
             byte_count += sub_bytes;
         } else {
             let size = entry.metadata().map(|m| m.len()).unwrap_or(0);
-            fs::copy(entry.path(), &dest_path).map_err(|e| e.to_string())?;
+            fs::copy(entry.path(), &dest_path).map_err(|e| {
+                let raw = e.to_string();
+                if raw.contains("os error 5") || raw.contains("拒绝访问") {
+                    format!("复制文件失败: 拒绝访问 - {}。\n请关闭该工具的所有进程后重试。", entry.path().display())
+                } else if raw.contains("os error 32") || raw.contains("being used by another process") {
+                    format!("复制文件失败: 文件被占用 - {}。\n请关闭该工具的所有进程后重试。", entry.path().display())
+                } else {
+                    format!("复制文件失败: {} - {}", entry.path().display(), raw)
+                }
+            })?;
             file_count += 1;
             byte_count += size;
             *total_bytes_copied += size;
@@ -375,8 +391,11 @@ fn create_junction(target: &Path, link: &Path) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
 
     if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("创建 Junction 失败: {}", stderr));
+        let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+        if stderr.contains("os error 5") || stderr.contains("拒绝访问") || stderr.contains("denied") {
+            return Err(format!("创建 Junction 失败: 拒绝访问。\n请确认以管理员身份运行本程序，且原路径 {} 没有被其他程序占用。", link.display()));
+        }
+        return Err(format!("创建 Junction 失败 ({} -> {}): {}", link.display(), target.display(), stderr.trim()));
     }
     Ok(())
 }

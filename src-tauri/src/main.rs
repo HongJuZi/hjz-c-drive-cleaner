@@ -151,6 +151,23 @@ async fn check_preconditions(
     tokio::task::spawn_blocking(move || {
         let tool_map = tool_map::get_tool_map();
         let free_space = check::get_disk_free_space(&target_path);
+        let is_admin_user = admin::is_admin();
+        let junction_ok = check::test_junction_capability();
+
+        // 检查目标目录写权限（创建临时目录测试）
+        let target_base = std::path::PathBuf::from(&target_path).join("c-drive-cleaner");
+        let target_write_ok = if target_base.exists() {
+            check::check_dir_write_permission(&target_base).is_ok()
+        } else {
+            // 目标目录不存在时，检查父目录写权限
+            let parent = std::path::PathBuf::from(&target_path);
+            if parent.exists() {
+                check::check_dir_write_permission(&parent).is_ok()
+            } else {
+                true // 父目录也不存在，会在迁移时创建
+            }
+        };
+
         let mut results = Vec::new();
 
         for tid in &tool_ids {
@@ -174,6 +191,8 @@ async fn check_preconditions(
                     tool_map::RiskLevel::Low => "low",
                 };
 
+                // 权限检查
+                let mut permission_ok = true;
                 let mut warnings = Vec::new();
                 if !running_procs.is_empty() {
                     warnings.push(format!("以下进程正在运行: {}", running_procs.join(", ")));
@@ -183,6 +202,42 @@ async fn check_preconditions(
                         path_util::format_size(total_size + 1024 * 1024 * 100),
                         path_util::format_size(free_space)));
                 }
+
+                // 目标目录写权限检查
+                if !target_write_ok {
+                    permission_ok = false;
+                    warnings.push(format!("目标目录 {} 无写权限，请检查目录权限或以管理员身份运行", target_path));
+                }
+
+                // 对每个路径检查写权限
+                for path_template in &tool.paths {
+                    let resolved = path_util::resolve_path(path_template);
+                    if resolved.exists() {
+                        // 检查源目录写权限
+                        if let Err(e) = check::check_dir_write_permission(&resolved) {
+                            permission_ok = false;
+                            warnings.push(format!("源目录权限不足: {}", e));
+                        }
+                        // 检查父目录写权限（创建 Junction 需要）
+                        if let Err(e) = check::check_parent_write_permission(&resolved) {
+                            permission_ok = false;
+                            warnings.push(format!("源目录父级权限不足: {}", e));
+                        }
+                    }
+                }
+
+                // Junction 策略额外检查
+                if matches!(tool.strategy, tool_map::MigrationStrategy::Junction) {
+                    if let Err(ref e) = junction_ok {
+                        permission_ok = false;
+                        warnings.push(format!("Junction 能力检测失败: {}。请以管理员身份运行", e));
+                    }
+                    if !is_admin_user {
+                        permission_ok = false;
+                        warnings.push("当前非管理员模式，Junction 迁移需要管理员权限。请点击顶部用户状态标签申请管理员权限后重试。".into());
+                    }
+                }
+
                 if risk == "high" {
                     warnings.push("Junction软链接将修改文件系统结构，操作不可逆（可回滚）".into());
                 }
@@ -190,7 +245,7 @@ async fn check_preconditions(
                     warnings.push("将修改用户环境变量，影响所有使用该变量的程序".into());
                 }
 
-                let can_migrate = running_procs.is_empty() && disk_ok;
+                let can_migrate = running_procs.is_empty() && disk_ok && permission_ok;
 
                 results.push(PreconditionResult {
                     tool_id: tid.clone(),

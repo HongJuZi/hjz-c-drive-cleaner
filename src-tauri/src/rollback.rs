@@ -47,9 +47,9 @@ pub fn rollback_tool(
             for path_template in &record.original_paths {
                 let original_path = resolve_path(path_template);
                 if crate::path_util::is_junction(&original_path) {
-                    // 删除 Junction
+                    // 删除 Junction（必须用 rmdir，不能用 fs::remove_dir）
                     on_progress(RollbackProgress::new(tool_id, &record.tool_name, 5, "正在删除 Junction 软链接..."));
-                    fs::remove_dir(&original_path).map_err(|e| e.to_string())?;
+                    crate::path_util::remove_junction(&original_path).map_err(|e| format!("删除 Junction 失败: {}", e))?;
                     logger.info(&format!("已删除 Junction: {}", original_path.display()));
 
                     // 从目标目录复制回原路径
@@ -92,9 +92,9 @@ pub fn rollback_tool(
                 let original_path = resolve_path(path_template);
                 let target = PathBuf::from(&record.target_path);
 
-                // 如果是 Junction 则先删除
+                // 如果是 Junction 则先删除（必须用 rmdir，不能用 fs::remove_dir）
                 if crate::path_util::is_junction(&original_path) {
-                    fs::remove_dir(&original_path).map_err(|e| e.to_string())?;
+                    crate::path_util::remove_junction(&original_path).map_err(|e| format!("删除 Junction 失败: {}", e))?;
                     logger.info(&format!("已删除 Junction: {}", original_path.display()));
                 }
 

@@ -68,3 +68,33 @@ pub fn is_junction(path: &PathBuf) -> bool {
     }
     false
 }
+
+/// 安全删除 NTFS Junction（使用 cmd /C rmdir 而非 fs::remove_dir）
+/// fs::remove_dir 在某些 Windows 版本上无法正确删除 Junction，
+/// 可能会误删目标目录内容。cmd /C rmdir 只删除 Junction 本身。
+pub fn remove_junction(path: &std::path::Path) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        use std::process::Command;
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+
+        let path_str = path.to_string_lossy();
+        let output = Command::new("cmd")
+            .args(&["/C", "rmdir", &path_str])
+            .creation_flags(CREATE_NO_WINDOW)
+            .output()
+            .map_err(|e| format!("执行 rmdir 失败: {}", e))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(format!("删除 Junction {} 失败: {}", path.display(), stderr.trim()));
+        }
+        Ok(())
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        std::fs::remove_dir(path).map_err(|e| format!("删除 Junction 失败: {}", e))
+    }
+}
