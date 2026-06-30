@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"C盘小清新默认权限","local":true,"windows":["main"],"permissions":["core:default","shell:allow-execute","shell:allow-open","dialog:default","fs:default","fs:allow-read-text-file","fs:allow-write-text-file","fs:allow-mkdir","fs:allow-exists","fs:allow-read-dir"]}}

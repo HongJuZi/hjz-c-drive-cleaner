@@ -1,0 +1,2 @@
+Found at 33292
+"check_system_version'); } catch {}\n  // 鍔犺浇鎸佷箙鍖栫殑宸ュ叿鐘舵€?  await loadToolStatus();\n  // 鑷\ue044姩妫€娴嬫渶浼樿矾寰?  try {\n    const best = await invoke('get_best_target_path') as string;\n    targetPath.value = best;\n  } catch {}\n});\n\nwatch(showLogs, async (v) => { if (v) await loadLogs(); });\n</script>\n\n<style>\n* { margin: 0; padding: 0; box-sizing: border-box; }\nbody { font-family: -apple-system, BlinkMacSyste"

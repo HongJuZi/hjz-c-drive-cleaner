@@ -1,0 +1,2298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="meta.title">C盘小清新 - 生产力软件缓存一键迁移工具 | 湖南红橘子科技</title>
+    <meta name="description" data-i18n="meta.desc" content="C盘小清新是一款专业的Windows C盘缓存迁移工具，支持90+款开发工具、服务器、AI智能体的缓存一键搬家到其他盘符，释放C盘空间。Junction软链接/环境变量双策略，风险提示，一键回滚。">
+    <meta name="keywords" content="C盘清理,缓存迁移,Junction,软链接,开发工具缓存,C盘空间不足,C盘小清新,红橘子科技,C Drive Cleaner, cache migration, Junction, symlink">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧹</text></svg>">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- AOS Animation -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CSS Variables - Design System
+           Primary: #00C67A (user specified)
+           Based on hjz-cms-ui-001 design spec
+           ============================================ */
+        :root {
+            /* Primary */
+            --primary: #00C67A;
+            --primary-dark: #00A86B;
+            --primary-darker: #008F5A;
+            --primary-light: #33D194;
+            --primary-lighter: #E6F9F1;
+            --primary-lightest: #F0FCF7;
+
+            /* Success */
+            --success: #1ED75F;
+            --success-dark: #3AC34C;
+
+            /* Error */
+            --error: #CB0000;
+            --error-light: #F24434;
+
+            /* Warning */
+            --warning: #FF9500;
+
+            /* Background */
+            --bg-white: #FFFFFF;
+            --bg-cloud: #F7F8FA;
+            --bg-light: #F2F3F5;
+            --bg-ivory: #F5F5F5;
+
+            /* Text */
+            --text-primary: #1E2328;
+            --text-secondary: #323232;
+            --text-hint: #9B9B9B;
+            --text-disabled: #A5A5A5;
+
+            /* Border */
+            --border-light: #E6E6E6;
+            --border-default: #D2D2D2;
+            --border-medium: #C3C3C3;
+
+            /* Shadow */
+            --shadow-sm: 0 1px 2px rgba(30, 35, 40, 0.04);
+            --shadow-md: 0 2px 8px rgba(30, 35, 40, 0.06);
+            --shadow-lg: 0 4px 16px rgba(30, 35, 40, 0.10);
+            --shadow-xl: 0 8px 32px rgba(30, 35, 40, 0.16);
+
+            /* Radius */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --radius-full: 50%;
+
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 24px;
+            --space-2xl: 32px;
+            --space-3xl: 48px;
+            --space-4xl: 64px;
+            --space-5xl: 96px;
+
+            /* Transition */
+            --transition-fast: 150ms ease;
+            --transition-normal: 250ms ease;
+            --transition-slow: 350ms ease;
+
+            /* Layout */
+            --container-max: 1200px;
+            --nav-height: 64px;
+        }
+
+        /* ============================================
+           Reset & Base
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; font-size: 16px; }
+
+        body {
+            font-family: "Noto Sans SC", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            color: var(--text-secondary);
+            background: var(--bg-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        html[lang="en"] body {
+            font-family: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        a { color: var(--primary); text-decoration: none; transition: color var(--transition-fast); }
+        a:hover { color: var(--primary-dark); }
+
+        img { max-width: 100%; display: block; }
+
+        /* ============================================
+           Container
+           ============================================ */
+        .container {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 var(--space-xl);
+        }
+
+        /* ============================================
+           Section
+           ============================================ */
+        .section {
+            padding: var(--space-5xl) 0;
+        }
+        .section-sm { padding: var(--space-4xl) 0; }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-4xl);
+        }
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+        }
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-bottom: var(--space-md);
+        }
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--text-hint);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           Buttons
+           ============================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(0, 198, 122, 0.35);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 198, 122, 0.45);
+            color: #fff;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1.5px solid var(--border-default);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-lightest);
+        }
+        .btn-lg { padding: 14px 32px; font-size: 16px; }
+        .btn-xl { padding: 16px 40px; font-size: 17px; }
+
+        /* ============================================
+           Language Switcher
+           ============================================ */
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            border: 1.5px solid var(--border-default);
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--bg-white);
+        }
+        .lang-switch button {
+            padding: 5px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-hint);
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+        .lang-switch button.active {
+            background: var(--primary);
+            color: #fff;
+        }
+        .lang-switch button:not(.active):hover {
+            color: var(--primary-dark);
+        }
+
+        /* ============================================
+           Navbar
+           ============================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 1000;
+            transition: all var(--transition-normal);
+        }
+        .navbar.scrolled {
+            box-shadow: var(--shadow-md);
+        }
+        .navbar-inner {
+            max-width: var(--container-max);
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 var(--space-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-lg);
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            flex-shrink: 0;
+        }
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 2px 8px rgba(0, 198, 122, 0.3);
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2xl);
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+            transition: color var(--transition-fast);
+        }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-cta { display: flex; align-items: center; gap: 12px; }
+        .nav-mobile-toggle {
+            display: none;
+            font-size: 22px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 4px;
+        }
+
+        /* ============================================
+           Mobile Slide-in Menu
+           ============================================ */
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+        .mobile-menu-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            max-width: 85vw;
+            height: 100%;
+            background: var(--bg-white);
+            z-index: 1200;
+            transition: right var(--transition-normal);
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            padding: var(--space-xl);
+        }
+        .mobile-menu.active { right: 0; }
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-2xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .mobile-menu-close {
+            font-size: 22px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 4px;
+        }
+        .mobile-menu-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        .mobile-menu-links a {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+        .mobile-menu-links a:hover { color: var(--primary); }
+        .mobile-menu-footer {
+            margin-top: var(--space-3xl);
+            padding-top: var(--space-xl);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        .mobile-menu-footer .btn { width: 100%; }
+
+        /* ============================================
+           Hero
+           ============================================ */
+        .hero {
+            position: relative;
+            padding-top: calc(var(--nav-height) + 60px);
+            padding-bottom: var(--space-5xl);
+            background: linear-gradient(180deg, var(--primary-lightest) 0%, var(--bg-white) 100%);
+            overflow: hidden;
+        }
+        .hero-bg-deco {
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 198, 122, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-bg-deco-2 {
+            position: absolute;
+            bottom: -150px;
+            left: -150px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 168, 107, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-inner {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4xl);
+            align-items: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: var(--bg-white);
+            border: 1px solid var(--primary-light);
+            color: var(--primary-dark);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: var(--space-lg);
+        }
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-desc {
+            font-size: 17px;
+            color: var(--text-hint);
+            line-height: 1.7;
+            margin-bottom: var(--space-2xl);
+            max-width: 520px;
+        }
+        .hero-actions {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+            margin-bottom: var(--space-3xl);
+        }
+        .hero-stats {
+            display: flex;
+            gap: var(--space-3xl);
+        }
+        .hero-stat-item .num {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+        .hero-stat-item .label {
+            font-size: 13px;
+            color: var(--text-hint);
+            margin-top: 4px;
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+        }
+        .hero-mockup {
+            background: var(--bg-white);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+        .hero-mockup-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 16px;
+            background: var(--bg-cloud);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .hero-mockup-bar .dot-r { width: 12px; height: 12px; border-radius: 50%; background: #FF5F57; }
+        .hero-mockup-bar .dot-y { width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; }
+        .hero-mockup-bar .dot-g { width: 12px; height: 12px; border-radius: 50%; background: #28CA42; }
+        .hero-mockup-body { padding: 20px; }
+        .mock-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            margin-bottom: var(--space-lg);
+        }
+        .mock-header-left h4 { font-size: 15px; font-weight: 600; }
+        .mock-header-left p { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+        .mock-header-right { text-align: right; }
+        .mock-header-right .val { font-size: 18px; font-weight: 700; }
+        .mock-header-right .lbl { font-size: 10px; opacity: 0.8; }
+        .mock-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .mock-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: #FF5F57;
+            width: 88%;
+        }
+        .mock-tool-list { display: flex; flex-direction: column; gap: 8px; }
+        .mock-tool {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--radius-lg);
+            background: var(--bg-cloud);
+            transition: background var(--transition-fast);
+        }
+        .mock-tool:hover { background: var(--bg-light); }
+        .mock-tool-icon {
+            width: 32px; height: 32px;
+            border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            background: var(--primary-lighter);
+            flex-shrink: 0;
+        }
+        .mock-tool-info { flex: 1; min-width: 0; }
+        .mock-tool-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .mock-tool-meta { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+        .mock-tool-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .badge-green { background: #f0fdf4; color: #059669; border: 1px solid #bbf7d0; }
+        .badge-yellow { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+        .badge-red { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .mock-progress {
+            margin-top: var(--space-lg);
+            padding: 14px;
+            border-radius: var(--radius-lg);
+            background: var(--primary-lightest);
+            border: 1px solid var(--primary-light);
+        }
+        .mock-progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .mock-progress-header span:first-child { color: var(--text-primary); font-weight: 600; }
+        .mock-progress-header span:last-child { color: var(--primary); font-weight: 700; }
+        .mock-progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--primary-lighter);
+            overflow: hidden;
+        }
+        .mock-progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            width: 65%;
+            animation: progress-anim 3s ease-in-out infinite;
+        }
+        @keyframes progress-anim {
+            0%, 100% { width: 60%; }
+            50% { width: 75%; }
+        }
+
+        /* Floating icons around mockup */
+        .floating-deco {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px; height: 56px;
+            border-radius: var(--radius-xl);
+            background: var(--bg-white);
+            box-shadow: var(--shadow-lg);
+            font-size: 26px;
+            animation: float-deco 4s ease-in-out infinite;
+        }
+        .floating-deco.d1 { top: -20px; right: -15px; animation-delay: 0s; }
+        .floating-deco.d2 { bottom: 40px; left: -25px; animation-delay: 1s; }
+        .floating-deco.d3 { bottom: -15px; right: 30px; animation-delay: 2s; }
+        @keyframes float-deco {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* ============================================
+           Features Grid
+           ============================================ */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-xl);
+        }
+        .feature-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-slow);
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+        .feature-card:hover::before { transform: scaleX(1); }
+        .feature-icon {
+            width: 52px; height: 52px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            margin-bottom: var(--space-lg);
+            transition: all var(--transition-normal);
+        }
+        .feature-card:hover .feature-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            transform: scale(1.05);
+        }
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+        .feature-desc {
+            font-size: 14px;
+            color: var(--text-hint);
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           How It Works
+           ============================================ */
+        .how-it-works { background: var(--bg-cloud); }
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-2xl);
+            position: relative;
+        }
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 16%;
+            right: 16%;
+            height: 2px;
+            background: var(--primary-light);
+            z-index: 0;
+        }
+        .step-item {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .step-number {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: var(--bg-white);
+            border: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0 auto var(--space-lg);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+        }
+        .step-item:hover .step-number {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            transform: scale(1.05);
+        }
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+        .step-desc {
+            font-size: 14px;
+            color: var(--text-hint);
+            line-height: 1.7;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           Supported Tools
+           ============================================ */
+        .tools-section { background: var(--bg-white); }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-lg);
+        }
+        .tool-category {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            transition: all var(--transition-normal);
+        }
+        .tool-category:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .tool-cat-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: var(--space-md);
+        }
+        .tool-cat-icon {
+            width: 40px; height: 40px;
+            border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            flex-shrink: 0;
+        }
+        .tool-cat-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .tool-cat-count {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+        .tool-list-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .tool-chip {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-cloud);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition-fast);
+        }
+        .tool-chip:hover {
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            border-color: var(--primary-light);
+        }
+
+        /* ============================================
+           Migration Strategies
+           ============================================ */
+        .strategies { background: var(--bg-cloud); }
+        .strategies-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-xl);
+        }
+        .strategy-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+        .strategy-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .strategy-icon {
+            width: 64px; height: 64px;
+            border-radius: var(--radius-xl);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            margin: 0 auto var(--space-lg);
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+        }
+        .strategy-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+        .strategy-desc {
+            font-size: 14px;
+            color: var(--text-hint);
+            line-height: 1.7;
+            margin-bottom: var(--space-lg);
+        }
+        .strategy-tag {
+            display: inline-block;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 16px;
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           Tech Stack
+           ============================================ */
+        .tech-stack {
+            background: var(--text-primary);
+            color: #fff;
+        }
+        .tech-stack .section-title { color: #fff; }
+        .tech-stack .section-subtitle { color: rgba(255, 255, 255, 0.6); }
+        .tech-stack .section-tag {
+            background: rgba(0, 198, 122, 0.15);
+            color: var(--primary-light);
+        }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-lg);
+        }
+        .tech-item {
+            text-align: center;
+            padding: var(--space-2xl) var(--space-lg);
+            border-radius: var(--radius-xl);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all var(--transition-normal);
+        }
+        .tech-item:hover {
+            background: rgba(0, 198, 122, 0.08);
+            border-color: rgba(0, 198, 122, 0.3);
+            transform: translateY(-4px);
+        }
+        .tech-icon {
+            font-size: 40px;
+            margin-bottom: var(--space-md);
+        }
+        .tech-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: var(--space-xs);
+        }
+        .tech-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* ============================================
+           Stats Banner
+           ============================================ */
+        .stats-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            padding: var(--space-4xl) 0;
+        }
+        .stats-banner-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-xl);
+            text-align: center;
+        }
+        .stat-banner-item .stat-icon {
+            font-size: 32px;
+            margin-bottom: var(--space-sm);
+            opacity: 0.9;
+        }
+        .stat-banner-item .stat-num {
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .stat-banner-item .stat-label {
+            font-size: 14px;
+            opacity: 0.85;
+            margin-top: var(--space-sm);
+        }
+
+        /* ============================================
+           Download CTA
+           ============================================ */
+        .download-cta {
+            text-align: center;
+            background: var(--primary-lightest);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-5xl) var(--space-3xl);
+            position: relative;
+            overflow: hidden;
+        }
+        .download-cta::before {
+            content: '';
+            position: absolute;
+            top: -50px; right: -50px;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 198, 122, 0.1) 0%, transparent 70%);
+        }
+        .download-cta::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; left: -80px;
+            width: 400px; height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 168, 107, 0.08) 0%, transparent 70%);
+        }
+        .download-cta-inner { position: relative; z-index: 1; }
+        .download-cta h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+        }
+        .download-cta p {
+            font-size: 16px;
+            color: var(--text-hint);
+            margin-bottom: var(--space-2xl);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .download-actions {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+        .download-meta {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-2xl);
+            margin-top: var(--space-xl);
+            font-size: 13px;
+            color: var(--text-hint);
+            flex-wrap: wrap;
+        }
+        .download-meta i { color: var(--primary); margin-right: 4px; }
+
+        /* ============================================
+           Footer
+           ============================================ */
+        .footer {
+            background: var(--text-primary);
+            color: rgba(255, 255, 255, 0.7);
+            padding: var(--space-4xl) 0 var(--space-2xl);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: var(--space-3xl);
+            margin-bottom: var(--space-3xl);
+            padding-bottom: var(--space-3xl);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .footer-brand .nav-brand { color: #fff; margin-bottom: var(--space-lg); }
+        .footer-brand p {
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: var(--space-lg);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .footer-social { display: flex; gap: var(--space-sm); }
+        .footer-social a {
+            width: 38px; height: 38px;
+            border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            transition: all var(--transition-fast);
+        }
+        .footer-social a:hover { background: var(--primary); color: #fff; }
+        .footer-col h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: var(--space-lg);
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: var(--space-md); }
+        .footer-col ul a {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            transition: color var(--transition-fast);
+        }
+        .footer-col ul a:hover { color: var(--primary-light); }
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: var(--space-md);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .footer-contact-item i {
+            color: var(--primary-light);
+            font-size: 15px;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .footer-bottom a { color: rgba(255, 255, 255, 0.4); }
+        .footer-bottom a:hover { color: var(--primary-light); }
+
+        /* ============================================
+           FAQ
+           ============================================ */
+        .faq-list {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-md);
+            overflow: hidden;
+            transition: all var(--transition-fast);
+        }
+        .faq-item:hover { border-color: var(--primary-light); }
+        .faq-item summary {
+            padding: var(--space-lg) var(--space-xl);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-md);
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after {
+            content: '\f067';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 14px;
+            color: var(--primary);
+            transition: transform var(--transition-fast);
+            flex-shrink: 0;
+        }
+        .faq-item[open] summary::after { content: '\f068'; }
+        .faq-item[open] summary { border-bottom: 1px solid var(--border-light); }
+        .faq-answer {
+            padding: var(--space-lg) var(--space-xl);
+            font-size: 14px;
+            color: var(--text-hint);
+            line-height: 1.8;
+        }
+
+        /* ============================================
+           Responsive — Large Tablet
+           ============================================ */
+        @media (max-width: 1024px) {
+            .hero-inner { grid-template-columns: 1fr; gap: var(--space-3xl); }
+            .hero-visual { max-width: 520px; margin: 0 auto; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .tools-grid { grid-template-columns: repeat(2, 1fr); }
+            .strategies-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-banner-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-2xl); }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: var(--space-2xl); }
+            .hero-title { font-size: 42px; }
+        }
+
+        /* ============================================
+           Responsive — Tablet
+           ============================================ */
+        @media (max-width: 768px) {
+            .section { padding: var(--space-4xl) 0; }
+            .section-title { font-size: 28px; }
+            .section-header { margin-bottom: var(--space-3xl); }
+            .hero { padding-top: calc(var(--nav-height) + 40px); padding-bottom: var(--space-4xl); }
+            .hero-title { font-size: 32px; }
+            .hero-desc { font-size: 15px; }
+            .hero-stats { gap: var(--space-xl); flex-wrap: wrap; }
+            .hero-stat-item .num { font-size: 24px; }
+
+            /* Switch to mobile nav */
+            .nav-links { display: none; }
+            .nav-cta .btn { display: none; }
+            .nav-cta .lang-switch { display: none; }
+            .nav-mobile-toggle { display: block; }
+
+            .features-grid { grid-template-columns: 1fr; }
+            .steps { grid-template-columns: 1fr; gap: var(--space-3xl); }
+            .steps::before { display: none; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-banner-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr; gap: var(--space-2xl); }
+            .footer-bottom { flex-direction: column; gap: var(--space-sm); text-align: center; }
+            .download-cta { padding: var(--space-4xl) var(--space-xl); }
+            .download-cta h2 { font-size: 26px; }
+            .download-meta { gap: var(--space-lg); }
+
+            .floating-deco { width: 44px; height: 44px; font-size: 20px; }
+            .floating-deco.d1 { top: -10px; right: -5px; }
+            .floating-deco.d2 { left: -10px; }
+            .floating-deco.d3 { right: 15px; }
+
+            .container { padding: 0 var(--space-lg); }
+        }
+
+        /* ============================================
+           Responsive — Mobile
+           ============================================ */
+        @media (max-width: 480px) {
+            .section { padding: var(--space-3xl) 0; }
+            .section-title { font-size: 24px; }
+            .section-tag { font-size: 12px; }
+            .hero-title { font-size: 26px; }
+            .hero-desc { font-size: 14px; }
+            .hero-actions { width: 100%; }
+            .hero-actions .btn { flex: 1; min-width: 140px; }
+            .hero-stats { gap: var(--space-lg); }
+            .hero-stat-item .num { font-size: 20px; }
+            .hero-stat-item .label { font-size: 11px; }
+
+            .feature-card { padding: var(--space-xl); }
+            .feature-title { font-size: 16px; }
+            .step-number { width: 64px; height: 64px; font-size: 26px; }
+            .step-title { font-size: 18px; }
+
+            .stats-banner-grid { grid-template-columns: 1fr 1fr; gap: var(--space-xl); }
+            .stat-banner-item .stat-num { font-size: 32px; }
+            .stat-banner-item .stat-icon { font-size: 26px; }
+
+            .tech-grid { grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+            .tech-item { padding: var(--space-xl) var(--space-md); }
+            .tech-icon { font-size: 32px; }
+
+            .download-cta h2 { font-size: 22px; }
+            .download-cta p { font-size: 14px; }
+            .download-actions { flex-direction: column; width: 100%; }
+            .download-actions .btn { width: 100%; }
+            .download-meta { flex-direction: column; gap: var(--space-sm); text-align: center; }
+
+            .footer { padding: var(--space-3xl) 0 var(--space-xl); }
+            .footer-contact-item { font-size: 13px; }
+
+            .faq-item summary { padding: var(--space-md) var(--space-lg); font-size: 14px; }
+            .faq-answer { padding: var(--space-md) var(--space-lg); font-size: 13px; }
+
+            .container { padding: 0 var(--space-md); }
+            .navbar-inner { padding: 0 var(--space-md); }
+            .nav-brand { font-size: 16px; }
+            .nav-brand-icon { width: 32px; height: 32px; font-size: 18px; }
+
+            .mock-tool-name { font-size: 12px; }
+            .mock-tool-meta { font-size: 10px; }
+            .mock-tool-badge { font-size: 10px; padding: 2px 6px; }
+
+            .floating-deco { display: none; }
+
+            .scroll-top { bottom: 20px; right: 20px; width: 42px; height: 42px; font-size: 16px; }
+        }
+
+        /* ============================================
+           Responsive — Small Mobile
+           ============================================ */
+        @media (max-width: 360px) {
+            .hero-title { font-size: 22px; }
+            .hero-stats { flex-direction: column; gap: var(--space-md); }
+            .stats-banner-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Scroll to top */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+            z-index: 999;
+        }
+        .scroll-top.visible { opacity: 1; visibility: visible; }
+        .scroll-top:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         Navbar
+         ============================================ -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#home" class="nav-brand">
+                <span class="nav-brand-icon">🧹</span>
+                <span data-i18n="nav.brand">C盘小清新</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features" data-i18n="nav.features">功能特性</a></li>
+                <li><a href="#how-it-works" data-i18n="nav.guide">使用指南</a></li>
+                <li><a href="#tools" data-i18n="nav.tools">支持工具</a></li>
+                <li><a href="#strategies" data-i18n="nav.strategies">迁移策略</a></li>
+                <li><a href="#faq" data-i18n="nav.faq">常见问题</a></li>
+            </ul>
+            <div class="nav-cta">
+                <div class="lang-switch">
+                    <button id="langZh" class="active" onclick="switchLang('zh')">中文</button>
+                    <button id="langEn" onclick="switchLang('en')">EN</button>
+                </div>
+                <a href="https://github.com/HongJuZi/hjz-c-drive-cleaner" target="_blank" class="btn btn-outline" style="padding: 8px 18px;">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <a href="#download" class="btn btn-primary" style="padding: 8px 20px;">
+                    <i class="fas fa-download"></i> <span data-i18n="nav.download">下载</span>
+                </a>
+                <button class="nav-mobile-toggle" onclick="toggleMobileMenu(true)">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+         Mobile Slide-in Menu
+         ============================================ -->
+    <div class="mobile-menu-overlay" id="mobileOverlay" onclick="toggleMobileMenu(false)"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="#home" class="nav-brand" onclick="toggleMobileMenu(false)">
+                <span class="nav-brand-icon">🧹</span>
+                <span data-i18n="nav.brand">C盘小清新</span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu(false)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="mobile-menu-links">
+            <li><a href="#features" onclick="toggleMobileMenu(false)"><i class="fas fa-star"></i> <span data-i18n="nav.features">功能特性</span></a></li>
+            <li><a href="#how-it-works" onclick="toggleMobileMenu(false)"><i class="fas fa-list-ol"></i> <span data-i18n="nav.guide">使用指南</span></a></li>
+            <li><a href="#tools" onclick="toggleMobileMenu(false)"><i class="fas fa-cubes"></i> <span data-i18n="nav.tools">支持工具</span></a></li>
+            <li><a href="#strategies" onclick="toggleMobileMenu(false)"><i class="fas fa-route"></i> <span data-i18n="nav.strategies">迁移策略</span></a></li>
+            <li><a href="#faq" onclick="toggleMobileMenu(false)"><i class="fas fa-circle-question"></i> <span data-i18n="nav.faq">常见问题</span></a></li>
+        </ul>
+        <div class="mobile-menu-footer">
+            <div class="lang-switch" style="align-self: flex-start;">
+                <button id="langZhMobile" class="active" onclick="switchLang('zh')">中文</button>
+                <button id="langEnMobile" onclick="switchLang('en')">EN</button>
+            </div>
+            <a href="https://github.com/HongJuZi/hjz-c-drive-cleaner" target="_blank" class="btn btn-outline">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+            <a href="#download" class="btn btn-primary" onclick="toggleMobileMenu(false)">
+                <i class="fas fa-download"></i> <span data-i18n="nav.download">下载</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================
+         Hero Section
+         ============================================ -->
+    <section class="hero" id="home">
+        <div class="hero-bg-deco"></div>
+        <div class="hero-bg-deco-2"></div>
+        <div class="container">
+            <div class="hero-inner">
+                <div class="hero-content" data-aos="fade-right">
+                    <div class="hero-badge">
+                        <span class="dot"></span>
+                        <span data-i18n="hero.badge">v1.0.0 正式版发布</span>
+                    </div>
+                    <h1 class="hero-title">
+                        <span data-i18n="hero.title1">让 C 盘不再红</span><br>
+                        <span class="highlight" data-i18n="hero.title2">缓存一键搬家</span>
+                    </h1>
+                    <p class="hero-desc" data-i18n="hero.desc">
+                        专为开发者打造的生产力软件缓存迁移工具。智能检测 90+ 款开发工具、服务器、AI 智能体的缓存数据，一键迁移到其他盘符，释放 C 盘空间。
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#download" class="btn btn-primary btn-lg">
+                            <i class="fas fa-download"></i> <span data-i18n="hero.download">立即下载</span>
+                        </a>
+                        <a href="https://github.com/HongJuZi/hjz-c-drive-cleaner" target="_blank" class="btn btn-outline btn-lg">
+                            <i class="fab fa-github"></i> <span data-i18n="hero.source">源码仓库</span>
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat-item">
+                            <div class="num">90+</div>
+                            <div class="label" data-i18n="hero.stat1">支持工具</div>
+                        </div>
+                        <div class="hero-stat-item">
+                            <div class="num">8</div>
+                            <div class="label" data-i18n="hero.stat2">工具分类</div>
+                        </div>
+                        <div class="hero-stat-item">
+                            <div class="num">3</div>
+                            <div class="label" data-i18n="hero.stat3">迁移策略</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual" data-aos="fade-left" data-aos-delay="200">
+                    <div class="floating-deco d1">🦀</div>
+                    <div class="floating-deco d2">🐍</div>
+                    <div class="floating-deco d3">🐳</div>
+                    <div class="hero-mockup">
+                        <div class="hero-mockup-bar">
+                            <span class="dot-r"></span>
+                            <span class="dot-y"></span>
+                            <span class="dot-g"></span>
+                        </div>
+                        <div class="hero-mockup-body">
+                            <div class="mock-header">
+                                <div class="mock-header-left">
+                                    <h4>🧹 <span data-i18n="hero.brand">C盘小清新</span></h4>
+                                    <p data-i18n="hero.mockSub">生产力软件缓存一键迁移工具</p>
+                                </div>
+                                <div class="mock-header-right">
+                                    <div class="val">12.3 GB</div>
+                                    <div class="lbl" data-i18n="hero.mockFree">C盘剩余</div>
+                                    <div class="mock-bar"><div class="mock-bar-fill"></div></div>
+                                </div>
+                            </div>
+                            <div class="mock-tool-list">
+                                <div class="mock-tool">
+                                    <div class="mock-tool-icon">📦</div>
+                                    <div class="mock-tool-info">
+                                        <div class="mock-tool-name">NPM</div>
+                                        <div class="mock-tool-meta" data-i18n="hero.mockNpm">2.1 GB · 环境变量迁移</div>
+                                    </div>
+                                    <span class="mock-tool-badge badge-yellow" data-i18n="hero.riskMid">中风险</span>
+                                </div>
+                                <div class="mock-tool">
+                                    <div class="mock-tool-icon">🦀</div>
+                                    <div class="mock-tool-info">
+                                        <div class="mock-tool-name" data-i18n="hero.mockRust">Rust工具链</div>
+                                        <div class="mock-tool-meta" data-i18n="hero.mockRustMeta">3.5 GB · 环境变量迁移</div>
+                                    </div>
+                                    <span class="mock-tool-badge badge-green" data-i18n="hero.riskLow">低风险</span>
+                                </div>
+                                <div class="mock-tool">
+                                    <div class="mock-tool-icon">🧠</div>
+                                    <div class="mock-tool-info">
+                                        <div class="mock-tool-name" data-i18n="hero.mockJet">JetBrains全家桶</div>
+                                        <div class="mock-tool-meta" data-i18n="hero.mockJetMeta">5.8 GB · Junction软链接</div>
+                                    </div>
+                                    <span class="mock-tool-badge badge-red" data-i18n="hero.riskHigh">高风险</span>
+                                </div>
+                                <div class="mock-tool">
+                                    <div class="mock-tool-icon">🦙</div>
+                                    <div class="mock-tool-info">
+                                        <div class="mock-tool-name">Ollama</div>
+                                        <div class="mock-tool-meta" data-i18n="hero.mockOllama">12.0 GB · 环境变量迁移</div>
+                                    </div>
+                                    <span class="mock-tool-badge badge-green" data-i18n="hero.riskLow">低风险</span>
+                                </div>
+                            </div>
+                            <div class="mock-progress">
+                                <div class="mock-progress-header">
+                                    <span data-i18n="hero.mockProgress">正在迁移: Rust工具链</span>
+                                    <span>65%</span>
+                                </div>
+                                <div class="mock-progress-bar">
+                                    <div class="mock-progress-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         Features Section
+         ============================================ -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag"><i class="fas fa-star"></i> <span data-i18n="features.tag">核心功能</span></span>
+                <h2 class="section-title" data-i18n="features.title">为什么选择 C盘小清新？</h2>
+                <p class="section-subtitle" data-i18n="features.subtitle">从智能扫描到一键回滚，全流程安全可靠的缓存迁移体验</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+                    <div class="feature-icon"><i class="fas fa-magnifying-glass-chart"></i></div>
+                    <h3 class="feature-title" data-i18n="features.f1Title">智能扫描检测</h3>
+                    <p class="feature-desc" data-i18n="features.f1Desc">自动检测系统中已安装的 90+ 款开发工具、服务器、编译器和 AI 智能体，精准定位缓存目录，实时计算占用空间。</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                    <h3 class="feature-title" data-i18n="features.f2Title">一键迁移</h3>
+                    <p class="feature-desc" data-i18n="features.f2Desc">选择目标盘符，勾选工具，点击迁移即可。支持 Junction 软链接和环境变量双策略，自动选择最优迁移方案。</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
+                    <h3 class="feature-title" data-i18n="features.f3Title">风险等级评估</h3>
+                    <p class="feature-desc" data-i18n="features.f3Desc">每个工具标记高/中/低三级风险，迁移前自动检测运行中的进程和磁盘空间，确保操作安全可控。</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+                    <div class="feature-icon"><i class="fas fa-rotate-left"></i></div>
+                    <h3 class="feature-title" data-i18n="features.f4Title">一键回滚</h3>
+                    <p class="feature-desc" data-i18n="features.f4Desc">迁移后不满意？一键回滚功能可将所有缓存恢复到原始 C 盘路径，安全无损，随时撤销。</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                    <h3 class="feature-title" data-i18n="features.f5Title">实时空间监控</h3>
+                    <p class="feature-desc" data-i18n="features.f5Desc">顶部 C 盘空间监控组件实时显示剩余空间和使用率，迁移完成后自动刷新，直观感受空间释放效果。</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon"><i class="fas fa-cloud-arrow-down"></i></div>
+                    <h3 class="feature-title" data-i18n="features.f6Title">在线自动更新</h3>
+                    <p class="feature-desc" data-i18n="features.f6Desc">内置版本检测和自动更新机制，一键下载安装最新版本，支持哈希校验，确保更新包完整安全。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         How It Works
+         ============================================ -->
+    <section class="section how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag"><i class="fas fa-list-ol"></i> <span data-i18n="how.tag">使用流程</span></span>
+                <h2 class="section-title" data-i18n="how.title">三步释放 C 盘空间</h2>
+                <p class="section-subtitle" data-i18n="how.subtitle">简单直观的操作流程，无需专业知识，人人都能上手</p>
+            </div>
+            <div class="steps">
+                <div class="step-item" data-aos="fade-up" data-aos-delay="0">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title" data-i18n="how.s1Title">扫描检测</h3>
+                    <p class="step-desc" data-i18n="how.s1Desc">点击"开始扫描"，自动检测系统中已安装的工具及其缓存占用，分类展示，一目了然。</p>
+                </div>
+                <div class="step-item" data-aos="fade-up" data-aos-delay="150">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title" data-i18n="how.s2Title">选择迁移</h3>
+                    <p class="step-desc" data-i18n="how.s2Desc">设置目标目录，勾选需要迁移的工具，系统自动进行前置检查并提示风险。</p>
+                </div>
+                <div class="step-item" data-aos="fade-up" data-aos-delay="300">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title" data-i18n="how.s3Title">完成释放</h3>
+                    <p class="step-desc" data-i18n="how.s3Desc">确认后一键执行迁移，实时进度显示，完成后重启软件即可生效，C盘空间立刻释放。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         Stats Banner
+         ============================================ -->
+    <section class="stats-banner">
+        <div class="container">
+            <div class="stats-banner-grid">
+                <div class="stat-banner-item" data-aos="zoom-in" data-aos-delay="0">
+                    <div class="stat-icon"><i class="fas fa-toolbox"></i></div>
+                    <div class="stat-num">90+</div>
+                    <div class="stat-label" data-i18n="stats.tools">支持工具数量</div>
+                </div>
+                <div class="stat-banner-item" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                    <div class="stat-num">8</div>
+                    <div class="stat-label" data-i18n="stats.categories">工具分类</div>
+                </div>
+                <div class="stat-banner-item" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="stat-icon"><i class="fas fa-arrows-rotate"></i></div>
+                    <div class="stat-num">3</div>
+                    <div class="stat-label" data-i18n="stats.strategies">迁移策略</div>
+                </div>
+                <div class="stat-banner-item" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-icon"><i class="fas fa-gauge-high"></i></div>
+                    <div class="stat-num">100%</div>
+                    <div class="stat-label" data-i18n="stats.rollback">可回滚</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         Supported Tools
+         ============================================ -->
+    <section class="section tools-section" id="tools">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag"><i class="fas fa-cubes"></i> <span data-i18n="tools.tag">工具支持</span></span>
+                <h2 class="section-title" data-i18n="tools.title">支持 90+ 款主流工具</h2>
+                <p class="section-subtitle" data-i18n="tools.subtitle">覆盖开发工具、服务器、编译器、图形设计、AI 智能体等全场景</p>
+            </div>
+            <div class="tools-grid">
+                <div class="tool-category" data-aos="fade-up" data-aos-delay="0">
+                    <div class="tool-cat-header">
+                        <div class="tool-cat-icon"><i class="fas fa-code"></i></div>
+                        <div class="tool-cat-name" data-i18n="tools.cat1">开发工具</div>
+                        <div class="tool-cat-count" data-i18n="tools.cat1Count">45款</div>
+                    </div>
+                    <div class="tool-list-inline">
+                        <span class="tool-chip">NPM</span><span class="tool-chip">Yarn</span><span class="tool-chip">PNPM</span>
+                        <span class="tool-chip">Pip</span><span class="tool-chip">Conda</span><span class="tool-chip">Maven</span>
+                        <span class="tool-chip">Gradle</span><span class="tool-chip">JetBrains</span><span class="tool-chip">VS Code</span>
+                        <span class="tool-chip">Cursor</span><span class="tool-chip">Android Studio</span><span class="tool-chip">Flutter</span>
+                        <span class="tool-chip">Ollama</span><span class="tool-chip">LM Studio</span><span class="tool-chip">Hugging Face</span>
+                        <span class="tool-chip">Claude Code</span><span class="tool-chip">Trae</span><span class="tool-chip">Qoder</span>
+                        <span class="tool-chip">Zed</span><span class="tool-chip">Warp</span>
+                    </div>
+                </div>
+                <div class="tool-category" data-aos="fade-up" data-aos-delay="100">
+                    <div class="tool-cat-header">
+                        <div class="tool-cat-icon"><i class="fas fa-server"></i></div>
+                        <div class="tool-cat-name" data-i18n="tools.cat2">服务器</div>
+                        <div class="tool-cat-count" data-i18n="tools.cat2Count">12款</div>
+                    </div>
+                    <div class="tool-list-inline">
+                        <span class="tool-chip">MySQL</span><span class="tool-chip">SQL Server</span><span class="tool-chip">PostgreSQL</span>
+                        <span class="tool-chip">Redis</span><span class="tool-chip">Elasticsearch</span><span class="tool-chip">RabbitMQ</span>
+                        <span class="tool-chip">Nginx</span><span class="tool-chip">Apache</span><span class="tool-chip">XAMPP</span>
+                        <span class="tool-chip">Docker</span><span class="tool-chip">WSL2</span><span class="tool-chip">IIS</span>
+                    </div>
+                </div>
+                <div class="tool-category" data-aos="fade-up" data-aos-delay="200">
+                    <div class="tool-cat-header">
+                        <div class="tool-cat-icon"><i class="fas fa-gears"></i></div>
+                        <div class="tool-cat-name" data-i18n="tools.cat3">编译器</div>
+                        <div class="tool-cat-count" data-i18n="tools.cat3Count">3款</div>
+                    </div>
+                    <div class="tool-list-inline">
+                        <span class="tool-chip">Rust (rustup + cargo)</span>
+                        <span class="tool-chip">Go (GOPATH + GOCACHE)</span>
+                        <span class="tool-chip">MinGW / MSYS2</span>
+                    </div>
+                </div>
+                <div class="tool-category" data-aos="fade-up" data-aos-delay="300">
+                    <div class="tool-cat-header">
+                        <div class="tool-cat-icon"><i class="fas fa-robot"></i></div>
+                        <div class="tool-cat-name" data-i18n="tools.cat4">AI 智能体</div>
+                        <div class="tool-cat-count" data-i18n="tools.cat4Count">9款</div>
+                    </div>
+                    <div class="tool-list-inline">
+                        <span class="tool-chip">OpenClaw</span><span class="tool-chip">QClaw</span><span class="tool-chip">Kimi Claw</span>
+                        <span class="tool-chip">WorkBuddy</span><span class="tool-chip">QoderWork CN</span>
+                        <span class="tool-chip">ToClaw</span><span class="tool-chip">AutoClaw</span>
+                        <span class="tool-chip">CoPaw</span><span class="tool-chip">StepClaw</span>
+                    </div>
+                </div>
+                <div class="tool-category" data-aos="fade-up" data-aos-delay="0">
+                    <div class="tool-cat-header">
+                        <div class="tool-cat-icon"><i class="fas fa-palette"></i></div>
+                        <div class="tool-cat-name" data-i18n="tools.cat5">图形设计</div>
+                        <div class="tool-cat-count" data-i18n="tools.cat5Count">6款</div>
+                    </div>
+                    <div class="tool-list-inline">
+                        <span class="tool-chip">Photoshop</span><span class="tool-chip">Premiere Pro</span>
+                        <span class="tool-chip">After Effects</span><span class="tool-chip">Stable Diffusion</span>
+                        <span class="tool-chip">Blender</span><span class="tool-chip">Figma</span>
+                    </div>
+                </div>
+                <div class="tool-category" data-aos="fade-up" data-aos-delay="100">
+                    <div class="tool-cat-header">
+                        <div class="tool-cat-icon"><i class="fas fa-film"></i></div>
+                        <div class="tool-cat-name" data-i18n="tools.cat6">音视频</div>
+                        <div class="tool-cat-count" data-i18n="tools.cat6Count">1款</div>
+                    </div>
+                    <div class="tool-list-inline">
+                        <span class="tool-chip" data-i18n="tools.jianying">剪映专业版</span>
+                    </div>
+                </div>
+                <div class="tool-category" data-aos="fade-up" data-aos-delay="200">
+                    <div class="tool-cat-header">
+                        <div class="tool-cat-icon"><i class="fas fa-file-word"></i></div>
+                        <div class="tool-cat-name" data-i18n="tools.cat7">文档办公</div>
+                        <div class="tool-cat-count" data-i18n="tools.cat7Count">3款</div>
+                    </div>
+                    <div class="tool-list-inline">
+                        <span class="tool-chip">WPS Office</span><span class="tool-chip">OneDrive</span>
+                        <span class="tool-chip" data-i18n="tools.baiduNetdisk">百度网盘</span>
+                    </div>
+                </div>
+                <div class="tool-category" data-aos="fade-up" data-aos-delay="300">
+                    <div class="tool-cat-header">
+                        <div class="tool-cat-icon"><i class="fas fa-ellipsis"></i></div>
+                        <div class="tool-cat-name" data-i18n="tools.cat8">其它软件</div>
+                        <div class="tool-cat-count" data-i18n="tools.cat8Count">11款</div>
+                    </div>
+                    <div class="tool-list-inline">
+                        <span class="tool-chip">Chrome/Edge</span><span class="tool-chip">Claude</span>
+                        <span class="tool-chip">VirtualBox</span><span class="tool-chip">Vagrant</span>
+                        <span class="tool-chip">Hyper-V</span>
+                        <span class="tool-chip" data-i18n="tools.androidEmu">Android模拟器</span>
+                        <span class="tool-chip">Filebeat</span><span class="tool-chip">Prometheus</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         Migration Strategies
+         ============================================ -->
+    <section class="section strategies" id="strategies">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag"><i class="fas fa-route"></i> <span data-i18n="strat.tag">迁移策略</span></span>
+                <h2 class="section-title" data-i18n="strat.title">三种智能迁移策略</h2>
+                <p class="section-subtitle" data-i18n="strat.subtitle">根据工具特性自动选择最优方案，确保迁移安全可靠</p>
+            </div>
+            <div class="strategies-grid">
+                <div class="strategy-card" data-aos="fade-up" data-aos-delay="0">
+                    <div class="strategy-icon"><i class="fas fa-link"></i></div>
+                    <h3 class="strategy-name" data-i18n="strat.s1Name">Junction 软链接</h3>
+                    <p class="strategy-desc" data-i18n="strat.s1Desc">通过创建 NTFS 目录联接（Junction Point），将原始路径指向新位置。对软件透明，无需修改配置，适合不支持环境变量的工具。</p>
+                    <span class="strategy-tag" data-i18n="strat.s1Tag">适用于：IDE、浏览器、设计软件</span>
+                </div>
+                <div class="strategy-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="strategy-icon"><i class="fas fa-terminal"></i></div>
+                    <h3 class="strategy-name" data-i18n="strat.s2Name">环境变量迁移</h3>
+                    <p class="strategy-desc" data-i18n="strat.s2Desc">通过设置系统环境变量，引导工具将缓存写入新路径。最安全的方式，软件原生支持，无副作用，可随时清除变量恢复。</p>
+                    <span class="strategy-tag" data-i18n="strat.s2Tag">适用于：包管理器、编译器、CLI工具</span>
+                </div>
+                <div class="strategy-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="strategy-icon"><i class="fas fa-database"></i></div>
+                    <h3 class="strategy-name" data-i18n="strat.s3Name">虚拟磁盘专属</h3>
+                    <p class="strategy-desc" data-i18n="strat.s3Desc">针对 Docker、WSL2、VirtualBox 等使用虚拟磁盘的工具，自动检测并提示使用官方导出/导入方案迁移，禁止软链接避免损坏。</p>
+                    <span class="strategy-tag" data-i18n="strat.s3Tag">适用于：Docker、WSL2、虚拟机</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         Tech Stack
+         ============================================ -->
+    <section class="section tech-stack">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag"><i class="fas fa-microchip"></i> <span data-i18n="tech.tag">技术架构</span></span>
+                <h2 class="section-title" data-i18n="tech.title">现代化技术栈驱动</h2>
+                <p class="section-subtitle" data-i18n="tech.subtitle">Rust 后端 + Vue 3 前端 + Tauri 框架，高性能、小体积、原生体验</p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-item" data-aos="zoom-in" data-aos-delay="0">
+                    <div class="tech-icon">🦀</div>
+                    <div class="tech-name">Rust</div>
+                    <div class="tech-desc" data-i18n="tech.rust">高性能后端引擎</div>
+                </div>
+                <div class="tech-item" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="tech-icon">⚡</div>
+                    <div class="tech-name">Vue 3</div>
+                    <div class="tech-desc" data-i18n="tech.vue">响应式前端框架</div>
+                </div>
+                <div class="tech-item" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="tech-icon">🏗️</div>
+                    <div class="tech-name">Tauri 2</div>
+                    <div class="tech-desc" data-i18n="tech.tauri">跨平台桌面框架</div>
+                </div>
+                <div class="tech-item" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="tech-icon">📦</div>
+                    <div class="tech-name">NSIS</div>
+                    <div class="tech-desc" data-i18n="tech.nsis">Windows 安装打包</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FAQ
+         ============================================ -->
+    <section class="section" id="faq">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag"><i class="fas fa-circle-question"></i> <span data-i18n="faq.tag">常见问题</span></span>
+                <h2 class="section-title" data-i18n="faq.title">你可能想了解</h2>
+                <p class="section-subtitle" data-i18n="faq.subtitle">关于 C盘小清新的常见疑问解答</p>
+            </div>
+            <div class="faq-list" data-aos="fade-up">
+                <details class="faq-item" open>
+                    <summary data-i18n="faq.q1">迁移缓存后软件还能正常使用吗？</summary>
+                    <div class="faq-answer" data-i18n="faq.a1">可以。C盘小清新采用 Junction 软链接和环境变量两种安全策略。Junction 方式对软件完全透明，软件读取原始路径时会自动重定向到新位置；环境变量方式则通过官方支持的配置项引导软件使用新路径。迁移完成后重启相关软件即可正常使用。</div>
+                </details>
+                <details class="faq-item">
+                    <summary data-i18n="faq.q2">迁移过程中会不会丢失数据？</summary>
+                    <div class="faq-answer" data-i18n="faq.a2">不会。迁移操作采用"复制-验证-切换"三步流程：先将缓存数据完整复制到目标位置，验证数据完整性后，再创建软链接或设置环境变量指向新路径。原始数据在确认迁移成功后才会清理。即使中途中断，原始数据也不会丢失。</div>
+                </details>
+                <details class="faq-item">
+                    <summary data-i18n="faq.q3">迁移后不满意可以恢复吗？</summary>
+                    <div class="faq-answer" data-i18n="faq.a3">可以。C盘小清新提供一键回滚功能，所有已迁移的工具都可以恢复到原始 C 盘路径。回滚过程同样安全可靠，支持批量操作和进度显示。</div>
+                </details>
+                <details class="faq-item">
+                    <summary data-i18n="faq.q4">为什么有些工具标记为"高风险"？</summary>
+                    <div class="faq-answer" data-i18n="faq.a4">高风险标记意味着该工具的缓存目录包含重要配置或数据（如 IDE 的索引、数据库文件等），迁移时需要关闭相关进程。系统会在迁移前自动检测运行中的进程并提示关闭，确保操作安全。建议按照提示操作即可。</div>
+                </details>
+                <details class="faq-item">
+                    <summary data-i18n="faq.q5">Docker 和 WSL2 为什么不能直接迁移？</summary>
+                    <div class="faq-answer" data-i18n="faq.a5">Docker Desktop 和 WSL2 使用虚拟磁盘文件（VHDX），这类文件不支持软链接迁移，强制操作会导致数据损坏。C盘小清新会自动识别这类工具并提示使用官方导出/导入方案进行安全迁移。</div>
+                </details>
+                <details class="faq-item">
+                    <summary data-i18n="faq.q6">支持哪些 Windows 系统？</summary>
+                    <div class="faq-answer" data-i18n="faq.a6">支持 Windows 10 (1903+) 及 Windows 11 的 64 位系统。部分操作（如创建 Junction、修改系统环境变量）需要管理员权限，软件内置权限检测和申请功能。</div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         Download CTA
+         ============================================ -->
+    <section class="section" id="download">
+        <div class="container">
+            <div class="download-cta" data-aos="zoom-in">
+                <div class="download-cta-inner">
+                    <h2 data-i18n="download.title">立即释放你的 C 盘空间</h2>
+                    <p data-i18n="download.desc">免费下载 C盘小清新，让 90+ 款生产力软件的缓存一键搬家，告别 C 盘空间不足的烦恼。</p>
+                    <div class="download-actions">
+                        <a href="https://github.com/HongJuZi/hjz-c-drive-cleaner/releases" target="_blank" class="btn btn-primary btn-xl">
+                            <i class="fab fa-windows"></i> <span data-i18n="download.win">下载 Windows 版</span>
+                        </a>
+                        <a href="https://github.com/HongJuZi/hjz-c-drive-cleaner" target="_blank" class="btn btn-outline btn-xl">
+                            <i class="fab fa-github"></i> <span data-i18n="download.github">查看 GitHub 源码</span>
+                        </a>
+                    </div>
+                    <div class="download-meta">
+                        <span><i class="fas fa-check-circle"></i> <span data-i18n="download.meta1">v1.0.0 正式版</span></span>
+                        <span><i class="fas fa-check-circle"></i> <span data-i18n="download.meta2">免费开源</span></span>
+                        <span><i class="fas fa-check-circle"></i> <span data-i18n="download.meta3">支持 Windows 10/11</span></span>
+                        <span><i class="fas fa-check-circle"></i> <span data-i18n="download.meta4">无广告无捆绑</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         Footer
+         ============================================ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#home" class="nav-brand">
+                        <span class="nav-brand-icon">🧹</span>
+                        <span data-i18n="nav.brand">C盘小清新</span>
+                    </a>
+                    <p data-i18n="footer.desc">生产力软件缓存一键迁移工具，让 C 盘不再红。由湖南红橘子科技有限公司开发维护。</p>
+                    <div class="footer-social">
+                        <a href="https://github.com/HongJuZi/hjz-c-drive-cleaner" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="mailto:xjiujiu@foxmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+                        <a href="https://www.hongjuzi.com.cn" target="_blank" title="Website"><i class="fas fa-globe"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4 data-i18n="footer.product">产品</h4>
+                    <ul>
+                        <li><a href="#features" data-i18n="nav.features">功能特性</a></li>
+                        <li><a href="#how-it-works" data-i18n="nav.guide">使用指南</a></li>
+                        <li><a href="#tools" data-i18n="nav.tools">支持工具</a></li>
+                        <li><a href="#download" data-i18n="footer.downloadNow">立即下载</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 data-i18n="footer.resources">资源</h4>
+                    <ul>
+                        <li><a href="https://github.com/HongJuZi/hjz-c-drive-cleaner" target="_blank" data-i18n="footer.githubRepo">GitHub 仓库</a></li>
+                        <li><a href="#faq" data-i18n="nav.faq">常见问题</a></li>
+                        <li><a href="#strategies" data-i18n="nav.strategies">迁移策略</a></li>
+                        <li><a href="https://www.hongjuzi.com.cn" target="_blank" data-i18n="footer.website">官方网站</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 data-i18n="footer.contact">联系我们</h4>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-building"></i>
+                        <span data-i18n="footer.company">湖南红橘子科技有限公司</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:xjiujiu@foxmail.com" style="color: inherit;">xjiujiu@foxmail.com</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-location-dot"></i>
+                        <span data-i18n="footer.address">湖南怀化</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-globe"></i>
+                        <a href="https://www.hongjuzi.com.cn" target="_blank" style="color: inherit;">www.hongjuzi.com.cn</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span data-i18n="footer.copyright">© 2024-2025 湖南红橘子科技有限公司. 保留所有权利.</span>
+                <span>
+                    <a href="https://www.hongjuzi.com.cn" target="_blank">www.hongjuzi.com.cn</a> &nbsp;|&nbsp;
+                    <a href="https://github.com/HongJuZi/hjz-c-drive-cleaner" target="_blank">GitHub</a>
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to top button -->
+    <button class="scroll-top" id="scrollTop" title="Top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- AOS Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // ============================================
+        // i18n Translations
+        // ============================================
+        const translations = {
+            zh: {
+                "meta.title": "C盘小清新 - 生产力软件缓存一键迁移工具 | 湖南红橘子科技",
+                "meta.desc": "C盘小清新是一款专业的Windows C盘缓存迁移工具，支持90+款开发工具、服务器、AI智能体的缓存一键搬家到其他盘符，释放C盘空间。Junction软链接/环境变量双策略，风险提示，一键回滚。",
+
+                "nav.brand": "C盘小清新",
+                "nav.features": "功能特性",
+                "nav.guide": "使用指南",
+                "nav.tools": "支持工具",
+                "nav.strategies": "迁移策略",
+                "nav.faq": "常见问题",
+                "nav.download": "下载",
+
+                "hero.badge": "v1.0.0 正式版发布",
+                "hero.title1": "让 C 盘不再红",
+                "hero.title2": "缓存一键搬家",
+                "hero.desc": "专为开发者打造的生产力软件缓存迁移工具。智能检测 90+ 款开发工具、服务器、AI 智能体的缓存数据，一键迁移到其他盘符，释放 C 盘空间。",
+                "hero.download": "立即下载",
+                "hero.source": "源码仓库",
+                "hero.stat1": "支持工具",
+                "hero.stat2": "工具分类",
+                "hero.stat3": "迁移策略",
+                "hero.brand": "C盘小清新",
+                "hero.mockSub": "生产力软件缓存一键迁移工具",
+                "hero.mockFree": "C盘剩余",
+                "hero.mockNpm": "2.1 GB · 环境变量迁移",
+                "hero.mockRust": "Rust工具链",
+                "hero.mockRustMeta": "3.5 GB · 环境变量迁移",
+                "hero.mockJet": "JetBrains全家桶",
+                "hero.mockJetMeta": "5.8 GB · Junction软链接",
+                "hero.mockOllama": "12.0 GB · 环境变量迁移",
+                "hero.riskLow": "低风险",
+                "hero.riskMid": "中风险",
+                "hero.riskHigh": "高风险",
+                "hero.mockProgress": "正在迁移: Rust工具链",
+
+                "features.tag": "核心功能",
+                "features.title": "为什么选择 C盘小清新？",
+                "features.subtitle": "从智能扫描到一键回滚，全流程安全可靠的缓存迁移体验",
+                "features.f1Title": "智能扫描检测",
+                "features.f1Desc": "自动检测系统中已安装的 90+ 款开发工具、服务器、编译器和 AI 智能体，精准定位缓存目录，实时计算占用空间。",
+                "features.f2Title": "一键迁移",
+                "features.f2Desc": "选择目标盘符，勾选工具，点击迁移即可。支持 Junction 软链接和环境变量双策略，自动选择最优迁移方案。",
+                "features.f3Title": "风险等级评估",
+                "features.f3Desc": "每个工具标记高/中/低三级风险，迁移前自动检测运行中的进程和磁盘空间，确保操作安全可控。",
+                "features.f4Title": "一键回滚",
+                "features.f4Desc": "迁移后不满意？一键回滚功能可将所有缓存恢复到原始 C 盘路径，安全无损，随时撤销。",
+                "features.f5Title": "实时空间监控",
+                "features.f5Desc": "顶部 C 盘空间监控组件实时显示剩余空间和使用率，迁移完成后自动刷新，直观感受空间释放效果。",
+                "features.f6Title": "在线自动更新",
+                "features.f6Desc": "内置版本检测和自动更新机制，一键下载安装最新版本，支持哈希校验，确保更新包完整安全。",
+
+                "how.tag": "使用流程",
+                "how.title": "三步释放 C 盘空间",
+                "how.subtitle": "简单直观的操作流程，无需专业知识，人人都能上手",
+                "how.s1Title": "扫描检测",
+                "how.s1Desc": "点击\"开始扫描\"，自动检测系统中已安装的工具及其缓存占用，分类展示，一目了然。",
+                "how.s2Title": "选择迁移",
+                "how.s2Desc": "设置目标目录，勾选需要迁移的工具，系统自动进行前置检查并提示风险。",
+                "how.s3Title": "完成释放",
+                "how.s3Desc": "确认后一键执行迁移，实时进度显示，完成后重启软件即可生效，C盘空间立刻释放。",
+
+                "stats.tools": "支持工具数量",
+                "stats.categories": "工具分类",
+                "stats.strategies": "迁移策略",
+                "stats.rollback": "可回滚",
+
+                "tools.tag": "工具支持",
+                "tools.title": "支持 90+ 款主流工具",
+                "tools.subtitle": "覆盖开发工具、服务器、编译器、图形设计、AI 智能体等全场景",
+                "tools.cat1": "开发工具", "tools.cat1Count": "45款",
+                "tools.cat2": "服务器", "tools.cat2Count": "12款",
+                "tools.cat3": "编译器", "tools.cat3Count": "3款",
+                "tools.cat4": "AI 智能体", "tools.cat4Count": "9款",
+                "tools.cat5": "图形设计", "tools.cat5Count": "6款",
+                "tools.cat6": "音视频", "tools.cat6Count": "1款",
+                "tools.cat7": "文档办公", "tools.cat7Count": "3款",
+                "tools.cat8": "其它软件", "tools.cat8Count": "11款",
+                "tools.jianying": "剪映专业版",
+                "tools.baiduNetdisk": "百度网盘",
+                "tools.androidEmu": "Android模拟器",
+
+                "strat.tag": "迁移策略",
+                "strat.title": "三种智能迁移策略",
+                "strat.subtitle": "根据工具特性自动选择最优方案，确保迁移安全可靠",
+                "strat.s1Name": "Junction 软链接",
+                "strat.s1Desc": "通过创建 NTFS 目录联接（Junction Point），将原始路径指向新位置。对软件透明，无需修改配置，适合不支持环境变量的工具。",
+                "strat.s1Tag": "适用于：IDE、浏览器、设计软件",
+                "strat.s2Name": "环境变量迁移",
+                "strat.s2Desc": "通过设置系统环境变量，引导工具将缓存写入新路径。最安全的方式，软件原生支持，无副作用，可随时清除变量恢复。",
+                "strat.s2Tag": "适用于：包管理器、编译器、CLI工具",
+                "strat.s3Name": "虚拟磁盘专属",
+                "strat.s3Desc": "针对 Docker、WSL2、VirtualBox 等使用虚拟磁盘的工具，自动检测并提示使用官方导出/导入方案迁移，禁止软链接避免损坏。",
+                "strat.s3Tag": "适用于：Docker、WSL2、虚拟机",
+
+                "tech.tag": "技术架构",
+                "tech.title": "现代化技术栈驱动",
+                "tech.subtitle": "Rust 后端 + Vue 3 前端 + Tauri 框架，高性能、小体积、原生体验",
+                "tech.rust": "高性能后端引擎",
+                "tech.vue": "响应式前端框架",
+                "tech.tauri": "跨平台桌面框架",
+                "tech.nsis": "Windows 安装打包",
+
+                "faq.tag": "常见问题",
+                "faq.title": "你可能想了解",
+                "faq.subtitle": "关于 C盘小清新的常见疑问解答",
+                "faq.q1": "迁移缓存后软件还能正常使用吗？",
+                "faq.a1": "可以。C盘小清新采用 Junction 软链接和环境变量两种安全策略。Junction 方式对软件完全透明，软件读取原始路径时会自动重定向到新位置；环境变量方式则通过官方支持的配置项引导软件使用新路径。迁移完成后重启相关软件即可正常使用。",
+                "faq.q2": "迁移过程中会不会丢失数据？",
+                "faq.a2": "不会。迁移操作采用\"复制-验证-切换\"三步流程：先将缓存数据完整复制到目标位置，验证数据完整性后，再创建软链接或设置环境变量指向新路径。原始数据在确认迁移成功后才会清理。即使中途中断，原始数据也不会丢失。",
+                "faq.q3": "迁移后不满意可以恢复吗？",
+                "faq.a3": "可以。C盘小清新提供一键回滚功能，所有已迁移的工具都可以恢复到原始 C 盘路径。回滚过程同样安全可靠，支持批量操作和进度显示。",
+                "faq.q4": "为什么有些工具标记为\"高风险\"？",
+                "faq.a4": "高风险标记意味着该工具的缓存目录包含重要配置或数据（如 IDE 的索引、数据库文件等），迁移时需要关闭相关进程。系统会在迁移前自动检测运行中的进程并提示关闭，确保操作安全。建议按照提示操作即可。",
+                "faq.q5": "Docker 和 WSL2 为什么不能直接迁移？",
+                "faq.a5": "Docker Desktop 和 WSL2 使用虚拟磁盘文件（VHDX），这类文件不支持软链接迁移，强制操作会导致数据损坏。C盘小清新会自动识别这类工具并提示使用官方导出/导入方案进行安全迁移。",
+                "faq.q6": "支持哪些 Windows 系统？",
+                "faq.a6": "支持 Windows 10 (1903+) 及 Windows 11 的 64 位系统。部分操作（如创建 Junction、修改系统环境变量）需要管理员权限，软件内置权限检测和申请功能。",
+
+                "download.title": "立即释放你的 C 盘空间",
+                "download.desc": "免费下载 C盘小清新，让 90+ 款生产力软件的缓存一键搬家，告别 C 盘空间不足的烦恼。",
+                "download.win": "下载 Windows 版",
+                "download.github": "查看 GitHub 源码",
+                "download.meta1": "v1.0.0 正式版",
+                "download.meta2": "免费开源",
+                "download.meta3": "支持 Windows 10/11",
+                "download.meta4": "无广告无捆绑",
+
+                "footer.desc": "生产力软件缓存一键迁移工具，让 C 盘不再红。由湖南红橘子科技有限公司开发维护。",
+                "footer.product": "产品",
+                "footer.resources": "资源",
+                "footer.contact": "联系我们",
+                "footer.company": "湖南红橘子科技有限公司",
+                "footer.address": "湖南怀化",
+                "footer.downloadNow": "立即下载",
+                "footer.githubRepo": "GitHub 仓库",
+                "footer.website": "官方网站",
+                "footer.copyright": "© 2024-2025 湖南红橘子科技有限公司. 保留所有权利."
+            },
+            en: {
+                "meta.title": "DriveClean - One-Click Cache Migration for Developer Tools | HongJuZi Tech",
+                "meta.desc": "DriveClean is a professional Windows C drive cache migration tool supporting 90+ dev tools, servers, and AI agents. Migrate caches to other drives with Junction symlinks or environment variables. Risk assessment, one-click rollback.",
+
+                "nav.brand": "DriveClean",
+                "nav.features": "Features",
+                "nav.guide": "How It Works",
+                "nav.tools": "Supported Tools",
+                "nav.strategies": "Strategies",
+                "nav.faq": "FAQ",
+                "nav.download": "Download",
+
+                "hero.badge": "v1.0.0 Stable Release",
+                "hero.title1": "Free Up Your C Drive",
+                "hero.title2": "One-Click Cache Migration",
+                "hero.desc": "A cache migration tool built for developers. Smart-detect caches from 90+ dev tools, servers, and AI agents, then migrate them to other drives with a single click to reclaim your C drive space.",
+                "hero.download": "Download Now",
+                "hero.source": "Source Code",
+                "hero.stat1": "Supported Tools",
+                "hero.stat2": "Categories",
+                "hero.stat3": "Strategies",
+                "hero.brand": "DriveClean",
+                "hero.mockSub": "One-Click Cache Migration Tool",
+                "hero.mockFree": "C: Free",
+                "hero.mockNpm": "2.1 GB · Env Variable",
+                "hero.mockRust": "Rust Toolchain",
+                "hero.mockRustMeta": "3.5 GB · Env Variable",
+                "hero.mockJet": "JetBrains Suite",
+                "hero.mockJetMeta": "5.8 GB · Junction Symlink",
+                "hero.mockOllama": "12.0 GB · Env Variable",
+                "hero.riskLow": "Low Risk",
+                "hero.riskMid": "Medium Risk",
+                "hero.riskHigh": "High Risk",
+                "hero.mockProgress": "Migrating: Rust Toolchain",
+
+                "features.tag": "Core Features",
+                "features.title": "Why Choose DriveClean?",
+                "features.subtitle": "From smart scanning to one-click rollback — a safe and reliable cache migration experience",
+                "features.f1Title": "Smart Scan & Detect",
+                "features.f1Desc": "Automatically detects 90+ installed dev tools, servers, compilers, and AI agents. Precisely locates cache directories and calculates space usage in real time.",
+                "features.f2Title": "One-Click Migration",
+                "features.f2Desc": "Pick a target drive, select tools, and click migrate. Supports both Junction symlinks and environment variable strategies, automatically choosing the optimal approach.",
+                "features.f3Title": "Risk Assessment",
+                "features.f3Desc": "Each tool is tagged with High/Medium/Low risk levels. Pre-migration checks detect running processes and disk space to ensure safe, controlled operations.",
+                "features.f4Title": "One-Click Rollback",
+                "features.f4Desc": "Not satisfied after migration? The one-click rollback feature restores all caches to their original C drive paths — safe, lossless, and instantly reversible.",
+                "features.f5Title": "Real-Time Space Monitor",
+                "features.f5Desc": "The C drive space monitor at the top shows free space and usage in real time, auto-refreshing after migration so you can instantly see the reclaimed space.",
+                "features.f6Title": "Auto Update",
+                "features.f6Desc": "Built-in version detection and auto-update mechanism. One-click download and install of the latest version with hash verification for package integrity.",
+
+                "how.tag": "How It Works",
+                "how.title": "Free Up C Drive in 3 Steps",
+                "how.subtitle": "Simple and intuitive workflow — no expertise needed, anyone can use it",
+                "how.s1Title": "Scan & Detect",
+                "how.s1Desc": "Click \"Start Scan\" to automatically detect installed tools and their cache usage, displayed by category at a glance.",
+                "how.s2Title": "Select & Migrate",
+                "how.s2Desc": "Set the target directory, check the tools to migrate, and the system runs pre-checks and risk prompts automatically.",
+                "how.s3Title": "Done & Freed",
+                "how.s3Desc": "Confirm and execute migration with real-time progress. Restart the software after completion and your C drive space is instantly freed.",
+
+                "stats.tools": "Supported Tools",
+                "stats.categories": "Categories",
+                "stats.strategies": "Strategies",
+                "stats.rollback": "Rollbackable",
+
+                "tools.tag": "Tool Support",
+                "tools.title": "Supports 90+ Popular Tools",
+                "tools.subtitle": "Covers dev tools, servers, compilers, design software, AI agents, and more",
+                "tools.cat1": "Dev Tools", "tools.cat1Count": "45",
+                "tools.cat2": "Servers", "tools.cat2Count": "12",
+                "tools.cat3": "Compilers", "tools.cat3Count": "3",
+                "tools.cat4": "AI Agents", "tools.cat4Count": "9",
+                "tools.cat5": "Design", "tools.cat5Count": "6",
+                "tools.cat6": "Audio/Video", "tools.cat6Count": "1",
+                "tools.cat7": "Office", "tools.cat7Count": "3",
+                "tools.cat8": "Other Software", "tools.cat8Count": "11",
+                "tools.jianying": "Jianying Pro",
+                "tools.baiduNetdisk": "Baidu Netdisk",
+                "tools.androidEmu": "Android Emulator",
+
+                "strat.tag": "Migration Strategies",
+                "strat.title": "Three Smart Migration Strategies",
+                "strat.subtitle": "Automatically selects the optimal approach based on tool characteristics for safe, reliable migration",
+                "strat.s1Name": "Junction Symlink",
+                "strat.s1Desc": "Creates NTFS directory junctions to redirect original paths to new locations. Transparent to software, no config changes needed. Ideal for tools that don't support environment variables.",
+                "strat.s1Tag": "Best for: IDEs, browsers, design software",
+                "strat.s2Name": "Environment Variable",
+                "strat.s2Desc": "Sets system environment variables to direct tools to write caches to new paths. The safest method — natively supported, no side effects, easily reversible by clearing the variable.",
+                "strat.s2Tag": "Best for: package managers, compilers, CLI tools",
+                "strat.s3Name": "Virtual Disk Special",
+                "strat.s3Desc": "For tools using virtual disks like Docker, WSL2, and VirtualBox — auto-detects and prompts to use official export/import methods. Symlinks are disabled to prevent corruption.",
+                "strat.s3Tag": "Best for: Docker, WSL2, VMs",
+
+                "tech.tag": "Tech Stack",
+                "tech.title": "Powered by Modern Technology",
+                "tech.subtitle": "Rust backend + Vue 3 frontend + Tauri framework — high performance, small footprint, native experience",
+                "tech.rust": "High-performance backend",
+                "tech.vue": "Reactive frontend framework",
+                "tech.tauri": "Cross-platform desktop framework",
+                "tech.nsis": "Windows installer packaging",
+
+                "faq.tag": "FAQ",
+                "faq.title": "Frequently Asked Questions",
+                "faq.subtitle": "Common questions about DriveClean",
+                "faq.q1": "Will software still work normally after cache migration?",
+                "faq.a1": "Yes. DriveClean uses two safe strategies: Junction symlinks and environment variables. Junction is completely transparent to software — reads to the original path are automatically redirected to the new location. Environment variables use officially supported config options to guide software to the new path. Just restart the relevant software after migration.",
+                "faq.q2": "Can data be lost during migration?",
+                "faq.a2": "No. Migration uses a \"copy-verify-switch\" three-step process: cache data is first fully copied to the target location, verified for integrity, then the symlink or environment variable is created to point to the new path. Original data is only cleaned up after successful migration confirmation. Even if interrupted, original data remains intact.",
+                "faq.q3": "Can I revert after migration?",
+                "faq.a3": "Yes. DriveClean provides one-click rollback — all migrated tools can be restored to their original C drive paths. The rollback process is equally safe and reliable, supporting batch operations with progress display.",
+                "faq.q4": "Why are some tools marked as \"High Risk\"?",
+                "faq.a4": "The High Risk tag means the tool's cache directory contains important configs or data (like IDE indexes, database files, etc.) and requires closing related processes before migration. The system auto-detects running processes and prompts you to close them before migration. Simply follow the prompts.",
+                "faq.q5": "Why can't Docker and WSL2 be migrated directly?",
+                "faq.a5": "Docker Desktop and WSL2 use virtual disk files (VHDX), which don't support symlink migration — forcing it would cause data corruption. DriveClean auto-detects these tools and prompts you to use the official export/import method for safe migration.",
+                "faq.q6": "Which Windows versions are supported?",
+                "faq.a6": "Supports 64-bit Windows 10 (1903+) and Windows 11. Some operations (like creating Junctions, modifying system environment variables) require administrator privileges — the app has built-in privilege detection and elevation.",
+
+                "download.title": "Free Up Your C Drive Now",
+                "download.desc": "Download DriveClean for free and migrate caches from 90+ productivity tools with one click. Say goodbye to C drive space shortages.",
+                "download.win": "Download for Windows",
+                "download.github": "View on GitHub",
+                "download.meta1": "v1.0.0 Stable",
+                "download.meta2": "Free & Open Source",
+                "download.meta3": "Windows 10/11",
+                "download.meta4": "No Ads, No Bundles",
+
+                "footer.desc": "One-click cache migration tool for productivity software. Free up your C drive. Developed and maintained by Hunan HongJuZi Technology Co., Ltd.",
+                "footer.product": "Product",
+                "footer.resources": "Resources",
+                "footer.contact": "Contact Us",
+                "footer.company": "Hunan HongJuZi Technology Co., Ltd.",
+                "footer.address": "Huaihua, Hunan, China",
+                "footer.downloadNow": "Download",
+                "footer.githubRepo": "GitHub Repository",
+                "footer.website": "Official Website",
+                "footer.copyright": "© 2024-2025 Hunan HongJuZi Technology Co., Ltd. All rights reserved."
+            }
+        };
+
+        // ============================================
+        // Language Switching
+        // ============================================
+        let currentLang = localStorage.getItem('lang') || 'zh';
+
+        function applyLang(lang) {
+            const dict = translations[lang] || translations.zh;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key] !== undefined) {
+                    // Handle elements with only text content
+                    if (el.children.length === 0) {
+                        el.textContent = dict[key];
+                    } else {
+                        // For elements with child elements (like <br>), preserve structure
+                        // Find text nodes and update them
+                        let found = false;
+                        for (let node of el.childNodes) {
+                            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                                if (!found) {
+                                    node.textContent = dict[key];
+                                    found = true;
+                                } else {
+                                    node.textContent = '';
+                                }
+                            }
+                        }
+                        if (!found) {
+                            el.textContent = dict[key];
+                        }
+                    }
+                }
+            });
+
+            // Update meta tags
+            if (dict["meta.title"]) document.title = dict["meta.title"];
+            if (dict["meta.desc"]) {
+                const metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc) metaDesc.setAttribute('content', dict["meta.desc"]);
+            }
+
+            // Update html lang attribute
+            document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+            // Update active button states
+            document.querySelectorAll('#langZh, #langZhMobile').forEach(b => b.classList.toggle('active', lang === 'zh'));
+            document.querySelectorAll('#langEn, #langEnMobile').forEach(b => b.classList.toggle('active', lang === 'en'));
+
+            // Persist preference
+            localStorage.setItem('lang', lang);
+            currentLang = lang;
+        }
+
+        function switchLang(lang) {
+            applyLang(lang);
+        }
+
+        // ============================================
+        // Mobile Menu
+        // ============================================
+        function toggleMobileMenu(show) {
+            const menu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileOverlay');
+            if (show) {
+                menu.classList.add('active');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // ============================================
+        // Initialize
+        // ============================================
+        // Apply saved language before AOS init to avoid flash
+        applyLang(currentLang);
+
+        AOS.init({
+            duration: 700,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 80,
+            disable: window.innerWidth < 480 ? 'mobile' : false
+        });
+
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        const scrollTopBtn = document.getElementById('scrollTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        // Scroll to top
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                const target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    const offset = 70;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Close mobile menu on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                toggleMobileMenu(false);
+            }
+        });
+    </script>
+</body>
+</html>
