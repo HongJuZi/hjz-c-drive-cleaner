@@ -87,7 +87,7 @@
                 <span class="float-icon" style="animation-delay:2.4s">🧶</span>
                 <span class="float-icon" style="animation-delay:2.8s">🐘</span>
               </div>
-              <div class="welcome-main-icon">🧹</div>
+              <img src="/logo.png" class="welcome-main-icon" alt="C盘小清新">
             </div>
             <h2 class="welcome-title">{{ t('welcomeTitle') }}</h2>
             <p class="welcome-desc" v-html="t('welcomeDesc')"></p>
@@ -377,19 +377,74 @@
       </div>
     </div>
 
-    <!-- 迁移完成对话框 -->
-    <div v-if="showCompletion" class="modal-overlay" @click="showCompletion = false">
-      <div class="modal" @click.stop>
-        <h3>{{ t('completionTitle') }}</h3>
-        <p class="modal-desc">{{ t('completionDesc') }}</p>
-        <div class="completion-list">
-          <div v-for="name in completedToolNames" :key="name" class="completion-item">
-            {{ name }}
+    <!-- 迁移报告弹框（替代旧完成弹框，需要用户确认才关闭） -->
+    <div v-if="showMigrationReport" class="modal-overlay">
+      <div class="modal modal-report" @click.stop>
+        <div class="report-header">
+          <h3>📋 {{ t('migrationReportTitle') }}</h3>
+          <div class="report-summary" :class="{ 'has-fail': migrationFailItems.length > 0, 'all-ok': migrationFailItems.length === 0 }">
+            {{ t('reportSummary', { total: migrationSuccessItems.length + migrationFailItems.length, success: migrationSuccessItems.length, fail: migrationFailItems.length }) }}
           </div>
         </div>
-        <p class="modal-hint">{{ t('completionHint') }}</p>
+
+        <div class="report-body">
+          <!-- 成功区 -->
+          <div class="report-section report-success-section" v-if="migrationSuccessItems.length > 0">
+            <div class="report-section-header success-header">
+              <span class="report-section-icon">✅</span>
+              <span class="report-section-title">{{ t('reportSuccessSection', { n: migrationSuccessItems.length }) }}</span>
+            </div>
+            <div class="report-list">
+              <div v-for="item in migrationSuccessItems" :key="item.toolId" class="report-item report-item-success">
+                <span class="report-item-icon">✓</span>
+                <div class="report-item-info">
+                  <span class="report-item-name">{{ item.toolName }}</span>
+                  <span class="report-item-detail">{{ t('migrateSuccessWithSize', { size: item.freedSpace }) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 失败区 -->
+          <div class="report-section report-fail-section" v-if="migrationFailItems.length > 0">
+            <div class="report-section-header fail-header">
+              <span class="report-section-icon">❌</span>
+              <span class="report-section-title">{{ t('reportFailSection', { n: migrationFailItems.length }) }}</span>
+            </div>
+            <div class="report-list">
+              <div v-for="item in migrationFailItems" :key="item.toolId" class="report-item report-item-fail">
+                <span class="report-item-icon">✕</span>
+                <div class="report-item-info">
+                  <span class="report-item-name">{{ item.toolName }}</span>
+                  <div class="report-error-box">
+                    <span class="report-error-label">{{ t('migrateFailed') }}:</span>
+                    <span class="report-error-text">{{ item.error }}</span>
+                  </div>
+                  <div class="report-suggestion-box">
+                    <span class="report-suggestion-label">{{ t('suggestion') }}:</span>
+                    <span class="report-suggestion-text">{{ item.suggestion }}</span>
+                  </div>
+                  <div class="report-rollback-status">
+                    <span class="rollback-badge rollback-ok">🔄 {{ t('migratedAutoRollback') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 成功提示 -->
+          <div class="report-hint" v-if="migrationFailItems.length === 0">
+            <p>{{ t('completionHint') }}</p>
+          </div>
+        </div>
+
         <div class="modal-footer">
-          <button @click="showCompletion = false" class="btn-primary">{{ t('gotIt') }}</button>
+          <button v-if="migrationFailItems.length > 0" @click="copyErrorReport" class="btn-copy-report">
+            📋 {{ t('copyErrorReport') }}
+          </button>
+          <button @click="showMigrationReport = false" class="btn-primary">
+            {{ t('confirmReport') }}
+          </button>
         </div>
       </div>
     </div>
@@ -610,6 +665,27 @@ const translations: Record<Lang, Record<string, string>> = {
     completionHint: '提示：关闭并重新打开上述软件即可自动加载新路径的缓存',
     gotIt: '知道了',
 
+    // Migration Report (新增)
+    migrationReportTitle: '迁移报告',
+    reportSummary: '共迁移 {total} 个工具，成功 {success} 个，失败 {fail} 个',
+    reportSuccessSection: '✅ 迁移成功明细（{n}）',
+    reportFailSection: '❌ 迁移失败明细（{n}）',
+    migrateSuccessWithSize: '迁移成功，已释放 {size}',
+    migratedAutoRollback: '已自动回滚',
+    migratedRollbackFailed: '回滚失败，建议手动恢复',
+    suggestion: '建议',
+    copyErrorReport: '复制错误报告',
+    reportCopied: '错误报告已复制到剪贴板',
+    reportCopyFailed: '复制失败，请手动复制',
+    confirmReport: '我知道了',
+    // 建议文案
+    suggestCloseProcess: '请关闭该软件后重试迁移',
+    suggestFreeSpace: '请清理目标磁盘空间后重试',
+    suggestRunAsAdmin: '请以管理员身份运行程序后重试',
+    suggestCloseProgram: '请关闭占用相关文件的程序后重试',
+    suggestCheckPermission: '请检查磁盘权限或手动迁移',
+    suggestCheckLogs: '请查看日志获取详细错误信息',
+
     // Update modal
     downloadingUpdate: '正在下载更新',
     downloadingVersion: '正在下载 {v} 版本...',
@@ -768,6 +844,27 @@ const translations: Record<Lang, Record<string, string>> = {
     completionHint: 'Tip: Close and reopen the above software to automatically load caches from the new path',
     gotIt: 'Got it',
 
+    // Migration Report (新增)
+    migrationReportTitle: 'Migration Report',
+    reportSummary: 'Total {total}, Success {success}, Failed {fail}',
+    reportSuccessSection: '✅ Migration Success ({n})',
+    reportFailSection: '❌ Migration Failed ({n})',
+    migrateSuccessWithSize: 'Migrated successfully, freed {size}',
+    migratedAutoRollback: 'Auto rollback completed',
+    migratedRollbackFailed: 'Rollback failed, manual recovery needed',
+    suggestion: 'Suggestion',
+    copyErrorReport: 'Copy Error Report',
+    reportCopied: 'Error report copied to clipboard',
+    reportCopyFailed: 'Copy failed, please copy manually',
+    confirmReport: 'Got it',
+    // Suggestions
+    suggestCloseProcess: 'Please close the software and retry',
+    suggestFreeSpace: 'Please free up target disk space and retry',
+    suggestRunAsAdmin: 'Please run the program as administrator and retry',
+    suggestCloseProgram: 'Please close programs that are using the files and retry',
+    suggestCheckPermission: 'Please check disk permissions or migrate manually',
+    suggestCheckLogs: 'Please check logs for detailed error information',
+
     // Update modal
     downloadingUpdate: 'Downloading Update',
     downloadingVersion: 'Downloading version {v}...',
@@ -838,6 +935,17 @@ interface PreCheckResult {
 }
 interface ToolGroup { category: string; tools: DetectedTool[] }
 interface ToolBrief { id: string; name: string; category: string; icon: string; description: string }
+interface MigrationSuccessItem {
+  toolName: string;
+  freedSpace: string;
+  toolId: string;
+}
+interface MigrationFailItem {
+  toolName: string;
+  error: string;
+  suggestion: string;
+  toolId: string;
+}
 
 const tools = ref<DetectedTool[]>([]);
 const selectedTools = ref<string[]>([]);
@@ -880,7 +988,7 @@ const targetPath = ref('D:\\DevCache');
 const migrationProgress = ref<MigrationProgress | null>(null);
 const showRollback = ref(false);
 const showLogs = ref(false);
-const showCompletion = ref(false);
+const showMigrationReport = ref(false);
 const showPreCheck = ref(false);
 const preChecking = ref(false);
 const preCheckResults = ref<PreCheckResult[]>([]);
@@ -889,7 +997,8 @@ const logs = ref('');
 const selectedRollback = ref<string[]>([]);
 const rollbackProgress = ref<RollbackProgress | null>(null);
 const isRollingBack = ref(false);
-const completedToolNames = ref<string[]>([]);
+const migrationSuccessItems = ref<MigrationSuccessItem[]>([]);
+const migrationFailItems = ref<MigrationFailItem[]>([]);
 const isAdmin = ref(false);
 const collapsedCategories = ref<string[]>([]);
 const filterMode = ref<'all' | 'installed' | 'uninstalled'>('all');
@@ -1197,27 +1306,45 @@ async function confirmAndMigrate() {
   if (toMigrate.length === 0) return;
 
   migrating.value = true;
-  completedToolNames.value = [];
+  migrationSuccessItems.value = [];
+  migrationFailItems.value = [];
   overallProgress.value = { done: 0, total: toMigrate.length };
-  const names: string[] = [];
 
   try {
     for (const toolId of toMigrate) {
+      const tool = tools.value.find(t => t.id === toolId);
+      const toolName = tool?.name || toolId;
       try {
         const result = await invoke('migrate_tool_cmd', { toolId, targetPath: targetPath.value });
-        names.push(getToolNameById(toolId));
+        // 收集成功项
+        const sizeBytes = tool?.size || 0;
+        migrationSuccessItems.value.push({
+          toolName,
+          freedSpace: formatSize(sizeBytes),
+          toolId,
+        });
         showToast(result as string, 'success');
       } catch (e) {
-        showToast(`${getToolNameById(toolId)} ${t('migrateFailed')}: ${e}`, 'error');
+        // 收集失败项
+        const errorMsg = String(e);
+        migrationFailItems.value.push({
+          toolName,
+          error: errorMsg,
+          suggestion: getSuggestion(errorMsg),
+          toolId,
+        });
+        showToast(`${toolName} ${t('migrateFailed')}: ${e}`, 'error');
       }
       overallProgress.value.done++;
     }
-    completedToolNames.value = names;
     await reloadMigratedTools();
     await loadToolStatus();
     await loadCDiskFree(); // 实时更新 C 盘空间
     selectedTools.value = [];
-    if (names.length > 0) showCompletion.value = true;
+    // 无论成功还是失败，都展示报告弹框
+    if (migrationSuccessItems.value.length > 0 || migrationFailItems.value.length > 0) {
+      showMigrationReport.value = true;
+    }
   } finally {
     migrating.value = false;
     migrationProgress.value = null;
@@ -1282,6 +1409,45 @@ function formatDownloadSize(bytes: number): string {
   if (bytes >= 1048576) return (bytes / 1048576).toFixed(2) + ' MB';
   if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
   return bytes + ' B';
+}
+
+function getSuggestion(error: string): string {
+  if (error.includes('正在运行') || error.includes('进程')) return t('suggestCloseProcess');
+  if (error.includes('空间不足') || error.includes('磁盘')) return t('suggestFreeSpace');
+  if (error.includes('权限') || error.includes('拒绝访问')) return t('suggestRunAsAdmin');
+  if (error.includes('占用') || error.includes('正在使用')) return t('suggestCloseProgram');
+  if (error.includes('Junction') || error.includes('链接')) return t('suggestCheckPermission');
+  return t('suggestCheckLogs');
+}
+
+async function copyErrorReport() {
+  let text = `=== ${t('migrationReportTitle')} ===\n\n`;
+
+  if (migrationSuccessItems.value.length > 0) {
+    text += `--- ${t('reportSuccessSection', { n: migrationSuccessItems.value.length })} ---\n`;
+    for (const item of migrationSuccessItems.value) {
+      text += `✅ ${item.toolName}：${t('migrateSuccessWithSize', { size: item.freedSpace })}\n`;
+    }
+    text += '\n';
+  }
+
+  if (migrationFailItems.value.length > 0) {
+    text += `--- ${t('reportFailSection', { n: migrationFailItems.value.length })} ---\n`;
+    for (const item of migrationFailItems.value) {
+      text += `❌ ${item.toolName}：${item.error}\n`;
+      text += `   ${t('suggestion')}: ${item.suggestion}\n`;
+    }
+    text += '\n';
+  }
+
+  text += `${t('reportGeneratedAt')}: ${new Date().toLocaleString()}`;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(t('reportCopied'), 'success');
+  } catch {
+    showToast(t('reportCopyFailed'), 'error');
+  }
 }
 
 async function checkForUpdate() {
@@ -1472,7 +1638,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft Ya
 /* Welcome state */
 .welcome-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 30px; text-align: center; flex: 1; }
 .welcome-animation { position: relative; width: 120px; height: 120px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
-.welcome-main-icon { font-size: 64px; animation: welcome-bounce 2s ease-in-out infinite; position: relative; z-index: 2; filter: drop-shadow(0 4px 12px rgba(0,198,122,0.3)); }
+.welcome-main-icon { width: 64px; height: 64px; border-radius: 14px; animation: welcome-bounce 2s ease-in-out infinite; position: relative; z-index: 2; filter: drop-shadow(0 4px 12px rgba(0,198,122,0.3)); }
 .floating-icons { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
 .float-icon { position: absolute; font-size: 20px; animation: float-up 3s ease-in-out infinite; opacity: 0.6; }
 .float-icon:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
@@ -1622,7 +1788,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* Modal */
 .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal { background: white; border-radius: 10px; padding: 20px; min-width: 400px; max-width: 580px; max-height: 80vh; display: flex; flex-direction: column; }
+.modal { background: white; border-radius: 10px; padding: 20px; min-width: 400px; max-width: 580px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
 .modal-large { min-width: 680px; }
 .modal-precheck { min-width: 520px; max-width: 640px; }
 .modal h3 { font-size: 20px; margin-bottom: 12px; }
@@ -1683,6 +1849,46 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* Log */
 .log-content { background: #1f2937; color: #e0e0e0; padding: 14px; border-radius: 8px; font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; line-height: 1.5; max-height: 450px; overflow-y: auto; white-space: pre-wrap; flex: 1; }
+
+/* Migration Report */
+.modal-report { min-width: 520px; max-width: 640px; }
+.report-header { margin-bottom: 12px; }
+.report-header h3 { font-size: 20px; margin-bottom: 8px; }
+.report-summary { font-size: 14px; padding: 8px 12px; border-radius: 8px; font-weight: 500; }
+.report-summary.all-ok { background: #f0fdf4; color: #059669; border: 1px solid #bbf7d0; }
+.report-summary.has-fail { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.report-body { flex: 1; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 14px; padding-right: 4px; }
+.report-section { border-radius: 10px; overflow: hidden; }
+.report-section-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-weight: 600; font-size: 15px; }
+.success-header { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff; }
+.fail-header { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: #fff; }
+.report-section-icon { font-size: 16px; line-height: 1; }
+.report-section-title { font-size: 15px; }
+.report-list { padding: 6px 4px; display: flex; flex-direction: column; gap: 4px; }
+.report-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-radius: 8px; margin: 0 4px; }
+.report-item-success { background: #f0fdf4; border: 1px solid #bbf7d0; transition: background 0.15s; }
+.report-item-success:hover { background: #dcfce7; }
+.report-item-fail { background: #fef2f2; border: 1px solid #fecaca; transition: background 0.15s; }
+.report-item-fail:hover { background: #fee2e2; }
+.report-item-icon { font-size: 14px; margin-top: 2px; flex-shrink: 0; width: 20px; text-align: center; }
+.report-item-success .report-item-icon { color: #059669; font-weight: 700; }
+.report-item-fail .report-item-icon { color: #dc2626; font-weight: 700; }
+.report-item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.report-item-name { font-weight: 600; font-size: 15px; color: #1f2937; }
+.report-item-detail { font-size: 14px; color: #059669; font-weight: 500; }
+.report-error-box { display: flex; gap: 4px; font-size: 14px; align-items: flex-start; }
+.report-error-label { color: #dc2626; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+.report-error-text { color: #991b1b; word-break: break-all; line-height: 1.4; }
+.report-suggestion-box { display: flex; align-items: flex-start; gap: 4px; font-size: 14px; }
+.report-suggestion-label { color: #d97706; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+.report-suggestion-text { color: #92400e; line-height: 1.4; }
+.report-rollback-status { margin-top: 2px; }
+.rollback-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; padding: 2px 10px; border-radius: 12px; font-weight: 500; }
+.rollback-badge.rollback-ok { background: #f0fdf4; color: #059669; border: 1px solid #bbf7d0; }
+.report-hint { padding: 10px 14px; background: #f0f9f4; border: 1px solid #d1f0e4; border-radius: 8px; }
+.report-hint p { font-size: 14px; color: #666666; margin: 0; }
+.btn-copy-report { padding: 9px 16px; border: 2px solid #d97706; border-radius: 8px; background: #fffbeb; color: #d97706; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.btn-copy-report:hover { background: #fef3c7; border-color: #b45309; color: #b45309; }
 
 /* Toast */
 .toast { position: fixed; bottom: 16px; right: 16px; padding: 10px 18px; border-radius: 8px; color: white; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.25s ease; z-index: 2000; }

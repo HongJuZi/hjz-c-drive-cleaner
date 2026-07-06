@@ -1,6 +1,6 @@
 [package]
 name = "c-drive-cleaner"
-version = "1.0.0"
+version = "1.0.1"
 description = "C盘开发缓存一键迁移工具"
 authors = ["湖南红橘子科技有限公司 <xjiujiu@foxmail.com>"]
 edition = "2021"
